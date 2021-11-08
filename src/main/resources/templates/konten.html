@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymleaf/layout"
+	layout:decorator="Template1">
+<head>
+<meta charset="ISO-8859-1">
+<title>Ihre Bank</title>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div>
+  <h1 style="padding: 60px;text-align: center;background: #1abc9c;color: white;font-size: 30px;">Ihre Online Banking</h1>
+</div>
+	<div layout:fragment="content">
+		<div class="col-md-6">
+			<div class="panel panel-primary">
+				<div class="panel-heading">Konto konsultation</div>
+				<div class="panel-body">
+					<form th:action="@{/kontoKonsultieren}" method="get">
+						<div>
+							<label>Code Konto:</label> <input type="text" name="KontoCode"
+								th:value="${KontoCode}" />
+							<button type="submit" class="btn btn-primary">Ok</button>
+						</div>
+					</form>
+					<div class="text-danger" th:if="${message}" th:utext="${message}">
+					<label>Konto nicht Gefunden</label></div>
+				</div>
+			</div>
+			<div class="panel panel-primary" th:if="${konto}">
+				<div class="panel-heading">Konto Infos</div>
+				<div class="panel-body">
+					<div>
+						<label>Name:</label> <label th:text="${konto.kunde.name}"></label>
+					</div>
+					<div>
+						<label>Kontostand:</label> <label th:text="${konto.kontostand}"></label>
+					</div>
+					<div>
+						<label> Erstellungsdatum:</label> <label
+							th:text="${konto.erstellungsdatum}"></label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="panel panel-primary" th:if="${konto}">
+				<div class="panel-heading">Operationen des Kontos</div>
+				<div class="panel-body">
+				<form th:action="@{/speichernOperation}" method="post">
+				<div>
+				<label>Konto</label>
+				<input type="hidden" name="KontoCode" th:value="${KontoCode}" />
+				<label th:text="${KontoCode}"></label>
+				</div>
+				<div>
+				<input type="radio" name="typOperation" value="EIN" onchange="document.getElementById('FürÜberweisen').style.display='none'"/>
+				<label>Einzahlen</label>
+				<input type="radio" name="typOperation" value="AUS" onchange="document.getElementById('FürÜberweisen').style.display='none'"/>
+				<label>Auszahlen</label>
+				<input type="radio" name="typOperation" value="UBER" onchange="document.getElementById('FürÜberweisen').style.display='block'"/>
+				<label>&uuml;berweisen</label>
+				</div>
+				<div id="FürÜberweisen">
+				<label>Zum:</label>
+				<input type="text" name="KontoCode2"/>
+				</div>
+				<div>
+				<label>Betrag:</label>
+				<input type="text" name="betrag" />
+				</div>
+				<div class="text-danger" th:text="${#httpServletRequest.getParameter('Error')}"></div>
+				<button type="submit" class="btn btn-primary" >Speichern</button>
+				</form>
+				</div>
+			</div>
+			<div class="panel panel-primary" th:if="${konto}">
+				<div class="panel-heading">Liste der Operationen</div>
+				<div class="panel-body">
+					<table class="table table-striped">
+						<tr>
+							<th>Nummer</th>
+							<th>Typ</th>
+							<th>Datum</th>
+							<th>Betrag</th>
+						</tr>
+						<tr th:each="o:${listOperationen}">
+							<td th:text="${o.nummer}"></td>
+							<td th:text="${o.class.simpleName}"></td>
+							<td th:text="${o.datumOperation}"></td>
+							<td th:text="${o.wert}"></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<div>
+<footer >
+  <p>IhreBank<br>
+  <a href="Support@example.com">Support@example.com</a></p>
+</footer>
+</div>
+</html>
